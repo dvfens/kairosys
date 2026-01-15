@@ -1,43 +1,42 @@
-from voice.listener import listen
-from voice.speaker import speak
-
-WAKE_WORDS = [
-    "kyrosis",
-    "process",
-    "roses",
-    "cirrhosis",
-    "viruses",
-    "meiosis"
-]
-
-def is_wake_word(text):
-    words = text.split()
-    return words and words[0] in WAKE_WORDS
+import threading
+import speech_recognition as sr
 
 
-def main():
-    speak("Kyrosis is online.")
-    print("Kyrosis listening...")
+from core.router import route
+from ui.tk_ui import KyrosisUI
 
+recognizer = sr.Recognizer()
+ui = KyrosisUI()
+
+def listen():
+    with sr.Microphone() as source:
+        ui.set_status("🎤 Listening...")
+        audio = recognizer.listen(source)
+
+    try:
+        return recognizer.recognize_google(audio)
+    except:
+        return None
+
+
+def listen_loop():
     while True:
         text = listen()
         if not text:
             continue
 
+        text = text.lower().strip()
         print("Heard:", text)
 
-        if is_wake_word(text):
-            print("WAKE WORD DETECTED")
+        ui.set_heard(text)
 
-            # 🔥 CRITICAL: exit listening loop BEFORE speaking
-            break
+        response = route(text)
 
-    # Speak AFTER mic is fully released
-    speak("I heard you. I am awake.")
-
-    # Resume listening (loop again)
-    main()
+        if response:
+            ui.set_status(f"🤖 Kyrosis: {response}")
+        else:
+            ui.set_status("⏳ Waiting for wake word...")
 
 
-if __name__ == "__main__":
-    main()
+threading.Thread(target=listen_loop, daemon=True).start()
+ui.run()

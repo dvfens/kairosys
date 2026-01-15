@@ -1,10 +1,10 @@
-def route(command: str) -> str:
-    if "open" in command:
-        return "OPEN"
-    if "explain" in command:
-        return "EXPLAIN"
-    if "play" in command:
-        return "PLAY"
-    if "stop" in command:
-        return "STOP"
-    return "UNKNOWN"
+from core.detector import is_wake_word, is_greeting
+
+def route(text: str):
+    if not is_wake_word(text):
+        return None
+
+    if is_greeting(text):
+        return "Hi. What would you like me to do?"
+
+    return "Yes. I'm listening."
