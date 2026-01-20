@@ -4,7 +4,7 @@ Kyrosis is a voice-based AI assistant project focused on building a clean, modul
 
 ---
 
-## Current Status: Checkpoint-2
+
 
 ### Features Implemented
 - Continuous speech listening
@@ -86,4 +86,5 @@ Socket Server (localhost)
    ↓
 [Unity client – not connected yet]
 ```
+
 
